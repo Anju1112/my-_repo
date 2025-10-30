@@ -1,0 +1,127 @@
+// ...existing code...
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A simple, accessible HTML page with interactive enhancements." />
+  <title>Simple Page — Enhanced</title>
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root{
+      --bg:#f8fafc; --fg:#0f172a; --muted:#475569; --accent:#0ea5a6;
+      --card:#ffffff; --radius:10px; --shadow:0 6px 18px rgba(2,6,23,0.08);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#071022; --fg:#e6eef6; --muted:#9fb4c8; --accent:#34d399;
+        --card:#071827; --shadow:0 6px 18px rgba(2,6,23,0.6);
+      }
+    }
+    [data-theme="dark"]{ /* explicit toggle overrides prefers-color-scheme */
+      --bg:#071022; --fg:#e6eef6; --muted:#9fb4c8; --accent:#34d399; --card:#071827;
+    }
+
+    html,body{height:100%; margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--fg);}
+    .wrap{max-width:900px; margin:48px auto; padding:24px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);}
+    header{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+    header h1{font-size:1.25rem; margin:0;}
+    nav a{color:var(--muted); text-decoration:none; margin-left:12px; font-size:0.95rem;}
+    .lead{font-size:1rem; color:var(--muted); margin-top:8px;}
+    .controls{margin:18px 0; display:flex; gap:8px; flex-wrap:wrap;}
+    button{background:var(--accent); border:none; color:white; padding:8px 12px; border-radius:8px; cursor:pointer;}
+    button.secondary{background:transparent; color:var(--fg); border:1px solid rgba(0,0,0,0.06);}
+    .card{padding:18px; border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); box-shadow:inset 0 0 0 1px rgba(0,0,0,0.02);}
+    #contentText{margin:0; font-size:1.05rem; line-height:1.6; color:var(--fg);}
+    footer{margin-top:20px; color:var(--muted); font-size:0.9rem; text-align:right;}
+    @media (max-width:520px){ .wrap{margin:20px 12px; padding:16px;} header{flex-direction:column; align-items:flex-start;} footer{text-align:left;} }
+    a:focus, button:focus{outline:3px solid rgba(14,165,166,0.18); outline-offset:3px;}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <header>
+      <div>
+        <h1 id="pageTitle">Hello — welcome!</h1>
+        <div class="lead">A simple, accessible webpage with a few interactive enhancements.</div>
+      </div>
+      <nav aria-label="Quick actions">
+        <a href="#content" id="skipLink">Skip to content</a>
+      </nav>
+    </header>
+
+    <section class="card" id="content" aria-labelledby="pageTitle" tabindex="-1">
+      <p id="contentText">This is some text written to the webpage. You can edit this text or toggle the theme using the buttons below.</p>
+
+      <div class="controls" aria-hidden="false">
+        <button id="editBtn" type="button" aria-label="Edit page text">Edit text</button>
+        <button id="toggleTheme" type="button" aria-label="Toggle color theme" class="secondary">Toggle theme</button>
+        <button id="resetBtn" type="button" aria-label="Reset text" class="secondary">Reset text</button>
+      </div>
+
+      <details>
+        <summary style="cursor:pointer; color:var(--muted)">About this sample</summary>
+        <p style="margin:8px 0 0; color:var(--muted)">This template demonstrates accessible markup, responsive layout, a theme toggle (stored in localStorage), and an edit flow for the visible text.</p>
+      </details>
+    </section>
+
+    <footer>
+      <span id="year"></span>
+    </footer>
+  </div>
+
+  <script>
+    // Lightweight interactivity: edit, reset, theme toggle, and footer year
+    (function(){
+      const defaultText = 'This is some text written to the webpage. You can edit this text or toggle the theme using the buttons below.';
+      const content = document.getElementById('contentText');
+      const editBtn = document.getElementById('editBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const toggleThemeBtn = document.getElementById('toggleTheme');
+      const yearEl = document.getElementById('year');
+
+      // Populate year
+      yearEl.textContent = new Date().getFullYear();
+
+      // Edit flow: use prompt for simplicity and accessibility
+      editBtn.addEventListener('click', () => {
+        const newText = prompt('Enter new page text:', content.textContent);
+        if (newText !== null) {
+          content.textContent = newText.trim() || defaultText;
+        }
+      });
+
+      resetBtn.addEventListener('click', () => {
+        if (confirm('Reset the page text to the original sample?')) {
+          content.textContent = defaultText;
+        }
+      });
+
+      // Theme toggle (uses data-theme attribute and localStorage)
+      const storageKey = 'site-theme';
+      function applyTheme(theme){
+        if (theme === 'dark') document.documentElement.setAttribute('data-theme','dark');
+        else document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem(storageKey, theme);
+      }
+      // initialize theme from storage
+      const saved = localStorage.getItem(storageKey);
+      if (saved === 'dark') applyTheme('dark');
+
+      toggleThemeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        applyTheme(isDark ? 'light' : 'dark');
+      });
+
+      // Improve "Skip to content" behavior for keyboard users
+      document.getElementById('skipLink').addEventListener('click', function(e){
+        const target = document.getElementById('content');
+        if (target) {
+          target.focus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+// ...existing code...
